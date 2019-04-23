@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity
     ListView listView;
     ArrayList<NewsItem> items = new ArrayList<>();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,15 +74,25 @@ public class MainActivity extends AppCompatActivity
         final Menu menu = navigationView.getMenu();
         menu.clear();
         DownloadData downloadData = new DownloadData(DataType.category, menu, null, null);
-        String link = "http://192.168.1.102:3000/api/category";
+        String link = "http://192.168.0.18:3000/api/category";
         try {
             downloadData.execute(link).get();
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        System.out.println("hwid: " + Settings.Secure.getString(getBaseContext().getContentResolver(),
-                Settings.Secure.ANDROID_ID));
+
+        DownloadData downloadData2 = new DownloadData(DataType.news, null, listView,null);
+        downloadData2.items = items;
+        String link2 = "http://192.168.0.18:3000/api/news/";
+        try {
+            downloadData2.execute(link2).get();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        //System.out.println("hwid: " + Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID));
     }
 
     @Override
@@ -130,7 +141,7 @@ public class MainActivity extends AppCompatActivity
 
         DownloadData downloadData = new DownloadData(DataType.news, null, listView,null);
         downloadData.items = items;
-        String link = "http://192.168.1.102:3000/api/news/cat/"+clicked;
+        String link = "http://192.168.0.18:3000/api/news/cat/"+clicked;
         try {
             downloadData.execute(link).get();
 

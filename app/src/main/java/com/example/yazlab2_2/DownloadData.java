@@ -3,6 +3,7 @@ package com.example.yazlab2_2;
 import android.os.AsyncTask;
 import android.view.Menu;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,7 +17,8 @@ import java.util.ArrayList;
 enum DataType {
     category,
     news,
-    newsdetail
+    newsdetail,
+    vote
 }
 
 public class DownloadData extends AsyncTask<String,Void,String> {
@@ -43,7 +45,7 @@ public class DownloadData extends AsyncTask<String,Void,String> {
 
         try {
 
-            System.out.println("url: " + strings[0]);
+            //System.out.println("url: " + strings[0]);
             url = new URL(strings[0]);
             httpURLConnection = (HttpURLConnection) url.openConnection();
             InputStream inputStream = httpURLConnection.getInputStream();
@@ -76,7 +78,7 @@ public class DownloadData extends AsyncTask<String,Void,String> {
 
         //System.out.println("123123123");
 
-        System.out.println("data: " + s);
+        //System.out.println("data: " + s);
 
         try {
 
@@ -115,9 +117,23 @@ public class DownloadData extends AsyncTask<String,Void,String> {
                     item.GetImage(detailed.imgView);
                     detailed.titleView.setText(item.Title);
                     detailed.contentView.setText(item.Content);
-                    detailed.countView.setText(item.Count + " Görüntenlenme");
+                    detailed.countView.setText(item.Count + " Görüntünlenme");
                     break;
                 }
+//                case vote:
+//                    JSONObject obj = new JSONObject(s);
+//                    int stat = obj.getInt("status");
+//                    boolean status;
+//
+//                    if(stat == 1){
+//                        status = true;
+//                    }
+//                    else
+//                        status = false;
+//
+//                    System.out.println("statüs: "+ status);
+//                    detailed.stats = status;
+
             }
 
         }catch (Exception e){
