@@ -1,6 +1,12 @@
 package com.example.yazlab2_2;
 
+import android.app.NotificationManager;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.view.Menu;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -14,11 +20,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+import static android.support.v4.content.ContextCompat.getSystemService;
+
 enum DataType {
     category,
     news,
     newsdetail,
-    vote
+    vote,
+    latest,
+    empty
 }
 
 public class DownloadData extends AsyncTask<String,Void,String> {
@@ -27,6 +38,7 @@ public class DownloadData extends AsyncTask<String,Void,String> {
     ListView listView;
     DetailedNews detailed;
     ArrayList<NewsItem> items = new ArrayList<>();
+    SharedPreferences pref;
 
     public DownloadData(DataType dataType, Menu menu, ListView listView, DetailedNews det) {
         this.dataType = dataType;
@@ -96,9 +108,10 @@ public class DownloadData extends AsyncTask<String,Void,String> {
                     break;
                 }
                 case news: {
+                    items.clear();
+
                     JSONArray array = new JSONArray(s);
                     //System.out.println(array.length());
-
                     for (int i=0; i<array.length(); i++){
                         JSONObject obje = array.getJSONObject(i);
                         NewsItem item = new NewsItem(obje.getString("imageUrl"),obje.getString("title"),obje.getString("_id"));
@@ -117,23 +130,36 @@ public class DownloadData extends AsyncTask<String,Void,String> {
                     item.GetImage(detailed.imgView);
                     detailed.titleView.setText(item.Title);
                     detailed.contentView.setText(item.Content);
-                    detailed.countView.setText(item.Count + " Görüntünlenme");
+                    detailed.countView.setText(item.Count + " Görüntülenme");
                     break;
                 }
-//                case vote:
-//                    JSONObject obj = new JSONObject(s);
-//                    int stat = obj.getInt("status");
-//                    boolean status;
-//
-//                    if(stat == 1){
-//                        status = true;
-//                    }
-//                    else
-//                        status = false;
-//
-//                    System.out.println("statüs: "+ status);
-//                    detailed.stats = status;
+                case vote:
+                    JSONObject obj2 = new JSONObject(s);
+                    boolean vote = obj2.getBoolean("vote");
+                    if (vote){
+                        detailed.likeButton.setBackgroundTintList(ColorStateList.valueOf(Color.BLUE));
+                        detailed.status = LikeStatus.liked;
+                    }
+                    else{
+                        detailed.unlikeButton.setBackgroundTintList(ColorStateList.valueOf(Color.BLUE));
+                        detailed.status = LikeStatus.disliked;
+                    }
+                break;
+                case latest:
+                    JSONObject obj = new JSONObject(s);
+                    String ver = obj.getString("version");
+                    int version = Integer.parseInt(ver.substring(0, 8), 16);
 
+                    if(pref.getInt("lastVersion",0) < version){
+                        pref.edit().putInt("lastVersion", version).apply();
+                        //Notification
+                    MainActivity.ShowNotification("Yeni haber!",obj.getString("title"),version, ver);
+
+                    }
+                break;
+                case empty:
+                    //Empty
+                break;
             }
 
         }catch (Exception e){
