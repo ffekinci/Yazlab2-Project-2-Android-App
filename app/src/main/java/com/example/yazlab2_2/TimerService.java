@@ -33,6 +33,7 @@ public class TimerService  extends IntentService {
 
         DownloadData downloadData = new DownloadData(DataType.latest, null,null,null);
         downloadData.pref = sp;
+        downloadData.ctx = TimerService.this;
 
         String link = MainActivity.address+"/api/news/lastNews";
         try {
@@ -42,7 +43,7 @@ public class TimerService  extends IntentService {
         }
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(25000);
 
         } catch (Exception e) {
 

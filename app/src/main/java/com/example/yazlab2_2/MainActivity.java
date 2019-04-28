@@ -3,6 +3,7 @@ package com.example.yazlab2_2;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -36,25 +37,28 @@ public class MainActivity extends AppCompatActivity
     ListView listView;
     ArrayList<NewsItem> items = new ArrayList<>();
 
-    public static String address = "http://192.168.0.18:3000";
+    public static String address = "http://192.168.43.26:3000";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        main = this;
+
         setContentView(R.layout.activity_main);
+
+        main = this;
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -111,15 +115,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     public static MainActivity main;
-    public static void ShowNotification(String title, String content, int version, String id){
+    public static void ShowNotification(String title, String content, int version, String id, Context ctx){
 
-        Intent notificationIntent = new Intent(main, DetailedNews.class);
+        System.out.println("maine gelen id: "+ id);
+
+        Intent notificationIntent = new Intent(ctx, DetailedNews.class);
+
         notificationIntent.putExtra("id", id);
 
-        PendingIntent pending = PendingIntent.getActivity(main, 0, notificationIntent, 0);
+        PendingIntent pending = PendingIntent.getActivity(ctx, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(main);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx);
         builder.setSmallIcon(R.drawable.ic_launcher_background);
         builder.setContentTitle(title);
         builder.setContentText(content);
@@ -127,7 +135,7 @@ public class MainActivity extends AppCompatActivity
         builder.setAutoCancel(true);
 
 
-        NotificationManager notificationManager = (NotificationManager) main.getSystemService(NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(version, builder.build());
     }
 
@@ -173,11 +181,13 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
 
         String clicked = item.getTitle().toString();
-        Toast.makeText(getApplicationContext(), clicked, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), clicked, Toast.LENGTH_LONG).show();
 
         DownloadData downloadData = new DownloadData(DataType.news, null, listView,null);
         downloadData.items = items;
         String link = address + "/api/news/cat/"+clicked;
+        if (clicked.equals("Tum Haberler"))
+            link = address+"/api/news/";
         try {
             downloadData.execute(link).get();
 

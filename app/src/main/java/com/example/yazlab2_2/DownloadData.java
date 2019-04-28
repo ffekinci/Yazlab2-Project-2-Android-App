@@ -1,6 +1,7 @@
 package com.example.yazlab2_2;
 
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -39,6 +40,8 @@ public class DownloadData extends AsyncTask<String,Void,String> {
     DetailedNews detailed;
     ArrayList<NewsItem> items = new ArrayList<>();
     SharedPreferences pref;
+    Context ctx;
+    String lastt;
 
     public DownloadData(DataType dataType, Menu menu, ListView listView, DetailedNews det) {
         this.dataType = dataType;
@@ -98,6 +101,7 @@ public class DownloadData extends AsyncTask<String,Void,String> {
                 case category: {
                     JSONArray array = new JSONArray(s);
                     menu.clear();
+                    menu.add("Tum Haberler");
                     for (int i=0; i<array.length(); i++){
                         JSONObject obje = array.getJSONObject(i);
 
@@ -150,10 +154,16 @@ public class DownloadData extends AsyncTask<String,Void,String> {
                     String ver = obj.getString("version");
                     int version = Integer.parseInt(ver.substring(0, 8), 16);
 
+                    lastt = ver;
+
+                    System.out.println("GELEN - "+ ver + " - Kayıtlı : "+ pref.getInt("lastVersion",0));
+
+
                     if(pref.getInt("lastVersion",0) < version){
+                        //pref.edit().clear();
                         pref.edit().putInt("lastVersion", version).apply();
                         //Notification
-                    MainActivity.ShowNotification("Yeni haber!",obj.getString("title"),version, ver);
+                    MainActivity.ShowNotification("Yeni haber!",obj.getString("title"),version, ver, ctx);
 
                     }
                 break;

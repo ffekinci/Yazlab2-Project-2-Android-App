@@ -39,6 +39,18 @@ public class DetailedNews extends AppCompatActivity {
 
         Intent intent = getIntent();
         newsId = intent.getStringExtra("id");
+        //System.out.println("Detaile gelen id = "+ newsId + "abc: "+ savedInstanceState.getInt("abc"));
+//
+//        if(savedInstanceState.getInt("abc",0) == 1){
+//            DownloadData downloadData = new DownloadData(DataType.latest, null,null,null);
+//            String link = MainActivity.address+"/api/news/lastNews";
+//            try {
+//                downloadData.execute(link).get();
+//                newsId = downloadData.lastt;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         hwid = Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
